@@ -1,0 +1,23 @@
+[
+  {
+  "id": 1,
+  "name": "Admin",
+  "email": "admin@gmail.com",
+  "password": "123456",
+  "role": "admin"
+},
+  {
+    "id": "1778434090710",
+    "name": "rakib",
+    "email": "rakib@gmail.com",
+    "password": "rakib",
+    "role": "user"
+  },
+  {
+    "id": "1778444855945",
+    "name": "nur hasan rakib",
+    "email": "rakibnh93@gmail.com",
+    "password": "asdfasdf",
+    "role": "user"
+  }
+]
