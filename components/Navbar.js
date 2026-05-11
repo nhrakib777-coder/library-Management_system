@@ -1,49 +1,116 @@
 'use client';
+
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
-  const { user, logout, loading } = useAuth();
+  const { user, logout } = useAuth();
   const pathname = usePathname();
 
-  // Hide navbar completely on admin routes
   if (pathname.startsWith('/admin')) return null;
 
-  if (loading) {
-    return (
-      <nav className="bg-white shadow p-4 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold text-blue-600">📚 Library</Link>
-        </div>
-      </nav>
-    );
-  }
+  const role = user?.user_metadata?.role;
 
   return (
-    <nav className="bg-white shadow p-4 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link href="/" className="text-xl font-bold text-blue-600">📚 Library</Link>
-        <div className="flex gap-5 items-center">
-          <Link href="/" className="text-gray-700 hover:text-blue-600">Home</Link>
-          <Link href="/books" className="text-gray-700 hover:text-blue-600">Books</Link>
+    <header className="fixed top-0 w-full z-50 enter">
 
-          {!user ? (
-            <>
-              <Link href="/login" className="text-gray-700 hover:text-blue-600">Login</Link>
-              <Link href="/register" className="bg-blue-600 text-white px-4 py-2 rounded">Register</Link>
-            </>
-          ) : (
-            <>
-              <Link href="/profile" className="text-gray-700 hover:text-blue-600">Profile</Link>
-              {user.user_metadata?.role === 'admin' && (
-                <Link href="/admin" className="text-gray-700 hover:text-blue-600">Admin</Link>
-              )}
-              <button onClick={logout} className="text-red-600 hover:text-red-700">Logout</button>
-            </>
-          )}
+      <div className="mx-auto max-w-7xl px-6 pt-4">
+
+        <div className="
+          flex items-center justify-between
+          bg-white/70 backdrop-blur-2xl
+          border border-white/40
+          rounded-2xl px-6 py-3
+          shadow-sm
+        ">
+
+          {/* BRAND */}
+          <Link href="/" className="font-semibold text-lg tracking-tight">
+            📚 Library
+          </Link>
+
+          {/* NAV */}
+          <nav className="flex items-center gap-10 text-sm">
+
+            <Nav href="/" label="Home" />
+            <Nav href="/books" label="Books" />
+
+            {!user ? (
+              <>
+                <Nav href="/login" label="Login" />
+
+                <Link
+                  href="/register"
+                  className="px-5 py-2 rounded-full bg-black text-white hover:scale-105 transition"
+                >
+                  Join
+                </Link>
+              </>
+            ) : role === "admin" ? (
+              <>
+                <Link
+                  href="/admin"
+                  className="px-5 py-2 rounded-full bg-black text-white hover:scale-105 transition"
+                >
+                  Admin Panel
+                </Link>
+
+                <button
+                  onClick={logout}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                <Nav href="/profile" label="Profile" />
+
+                <button
+                  onClick={logout}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  Logout
+                </button>
+              </>
+            )}
+
+          </nav>
+
         </div>
       </div>
-    </nav>
+    </header>
+  );
+}
+
+function Nav({ href, label }) {
+  const pathname = usePathname();
+
+  const isActive = pathname === href;
+
+  return (
+    <Link
+      href={href}
+      className={`
+        relative transition group
+        ${isActive
+          ? 'text-black font-semibold'
+          : 'text-gray-600 hover:text-black'
+        }
+      `}
+    >
+      {label}
+
+      <span
+        className={`
+          absolute left-0 -bottom-1 h-0.5 bg-black transition-all duration-300
+          ${isActive
+            ? 'w-full'
+            : 'w-0 group-hover:w-full'
+          }
+        `}
+      />
+    </Link>
   );
 }

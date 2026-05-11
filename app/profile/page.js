@@ -11,7 +11,6 @@ export default function ProfilePage() {
   const [myBooks, setMyBooks] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Load borrowed books
   useEffect(() => {
     if (!user) {
       router.push('/login');
@@ -19,6 +18,8 @@ export default function ProfilePage() {
     }
 
     async function fetchMyBooks() {
+      setLoading(true);
+
       const { data } = await supabase
         .from('borrows')
         .select('*, books(*)')
@@ -32,7 +33,6 @@ export default function ProfilePage() {
     fetchMyBooks();
   }, [user, router]);
 
-  // Return book function
   const handleReturn = async (borrowId, bookId) => {
     await supabase
       .from('borrows')
@@ -44,51 +44,122 @@ export default function ProfilePage() {
       .update({ status: 'available' })
       .eq('id', bookId);
 
-    // Refresh UI instantly
-    setMyBooks(myBooks.filter((item) => item.id !== borrowId));
+    setMyBooks(prev => prev.filter(item => item.id !== borrowId));
   };
 
   if (!user) return null;
 
   return (
-    <div className="max-w-4xl mx-auto p-5">
-      <h1 className="text-3xl font-bold mb-2">My Profile</h1>
-      <p className="text-gray-600 mb-6">Manage your account and borrowed books</p>
+    <div className="min-h-screen bg-elite px-6 py-24">
 
-      {/* Profile Info Section */}
-      <div className="p-4 border rounded-lg mb-8 bg-gray-50">
-        <h2 className="text-xl font-bold mb-2">Your Information</h2>
-        <p className="text-gray-700"><strong>Email:</strong> {user.email}</p>
-        <p className="text-gray-700"><strong>User ID:</strong> {user.id.slice(0, 10)}...</p>
-      </div>
+      <div className="max-w-5xl mx-auto space-y-10 enter">
 
-      {/* My Borrowed Books Section */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">My Borrowed Books</h2>
+        {/* HEADER */}
+        <div>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            My Library
+          </h1>
 
-        {loading ? (
-          <p>Loading your books...</p>
-        ) : myBooks.length === 0 ? (
-          <p className="text-gray-500">You haven’t borrowed any books yet.</p>
-        ) : (
-          <div className="grid gap-4">
-            {myBooks.map((item) => (
-              <div key={item.id} className="border p-4 rounded-lg flex justify-between items-center">
-                <div>
-                  <h3 className="font-bold">{item.books?.title}</h3>
-                  <p className="text-sm text-gray-500">Author: {item.books?.author}</p>
-                </div>
+          <p className="text-gray-500 mt-2">
+            Your reading space and borrowed collection
+          </p>
+        </div>
 
-                <button
-                  onClick={() => handleReturn(item.id, item.book_id)}
-                  className="bg-red-600 text-white px-4 py-2 rounded"
-                >
-                  Return Book
-                </button>
-              </div>
-            ))}
+        {/* PROFILE CARD */}
+        <div className="
+          rounded-3xl p-6
+          bg-white/60 backdrop-blur-xl
+          border border-white/40
+          shadow-sm
+          enter
+        ">
+
+          <p className="text-sm text-gray-500">Account</p>
+
+          <div className="mt-2 space-y-1">
+            <p className="text-lg font-medium">{user.email}</p>
+            <p className="text-xs text-gray-500">
+              ID: {user.id.slice(0, 12)}...
+            </p>
           </div>
-        )}
+
+        </div>
+
+        {/* BOOKS SECTION */}
+        <div className="space-y-6 enter">
+
+          <h2 className="text-sm uppercase tracking-[0.3em] text-gray-500">
+            Borrowed Books
+          </h2>
+
+          {loading ? (
+            <div className="text-gray-500 animate-pulse">
+              Loading your library...
+            </div>
+          ) : myBooks.length === 0 ? (
+            <div className="
+              p-10 text-center
+              bg-white/40 backdrop-blur-xl
+              border border-white/30
+              rounded-3xl text-gray-500
+            ">
+              You haven’t borrowed any books yet.
+            </div>
+          ) : (
+            <div className="space-y-4">
+
+              {myBooks.map(item => (
+                <div
+                  key={item.id}
+                  className="
+                    flex items-center justify-between
+                    p-5 rounded-2xl
+                    bg-white/60 backdrop-blur-xl
+                    border border-white/40
+                    hover:shadow-md transition lift
+                  "
+                >
+
+                  {/* LEFT */}
+                  <div className="flex items-center gap-4">
+
+                    <img
+                      src={item.books?.image || "https://via.placeholder.com/80"}
+                      className="w-14 h-20 object-cover rounded-lg"
+                    />
+
+                    <div>
+                      <h3 className="font-medium">
+                        {item.books?.title}
+                      </h3>
+
+                      <p className="text-sm text-gray-500">
+                        {item.books?.author}
+                      </p>
+                    </div>
+
+                  </div>
+
+                  {/* ACTION */}
+                  <button
+                    onClick={() => handleReturn(item.id, item.book_id)}
+                    className="
+                      px-5 py-2 rounded-full
+                      bg-red-500 text-white
+                      hover:scale-105 transition
+                    "
+                  >
+                    Return
+                  </button>
+
+                </div>
+              ))}
+
+            </div>
+          )}
+
+        </div>
+
       </div>
     </div>
   );

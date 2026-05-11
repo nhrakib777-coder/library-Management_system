@@ -1,4 +1,5 @@
 'use client';
+
 import { useState } from 'react';
 import { supabase } from '@/utils/supabase';
 import { useRouter } from 'next/navigation';
@@ -13,33 +14,109 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      const { data, error } =
+        await supabase.auth.signInWithPassword({ email, password });
+
       if (error) throw error;
 
-      const user = data.user;
+      toast.success('Welcome back');
 
-      toast.success('Login Successful!');
+      const role = data.user?.user_metadata?.role;
 
-      if (user.user_metadata?.role === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/');
-      }
-
+      router.push(role === 'admin' ? '/admin' : '/');
       router.refresh();
+
     } catch (err) {
       toast.error(err.message);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 border rounded-lg mt-10">
-      <h1 className="text-2xl font-bold mb-6">Login</h1>
-      <form onSubmit={handleLogin} className="space-y-4">
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} className="w-full p-3 border rounded" required />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border rounded" required />
-        <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded">Login</button>
-      </form>
+    <div className="min-h-screen bg-elite flex items-center justify-center px-6">
+
+      <div className="w-full max-w-md enter">
+
+        {/* HEADER */}
+        <div className="text-center mb-10">
+
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Welcome Back
+          </h1>
+
+          <p className="text-gray-500 mt-2">
+            Sign in to continue your library journey
+          </p>
+
+        </div>
+
+        {/* FORM CARD */}
+        <div className="
+          bg-white/60 backdrop-blur-xl
+          border border-white/40
+          shadow-sm
+          rounded-3xl p-8
+        ">
+
+          <form onSubmit={handleLogin} className="space-y-5">
+
+            {/* EMAIL */}
+            <input
+              type="email"
+              placeholder="Email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="
+                w-full px-5 py-4 rounded-2xl
+                bg-white/70
+                border border-white/40
+                outline-none
+                focus:ring-2 focus:ring-black/10
+                transition
+              "
+            />
+
+            {/* PASSWORD */}
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="
+                w-full px-5 py-4 rounded-2xl
+                bg-white/70
+                border border-white/40
+                outline-none
+                focus:ring-2 focus:ring-black/10
+                transition
+              "
+            />
+
+            {/* BUTTON */}
+            <button
+              type="submit"
+              className="
+                w-full py-4 rounded-2xl
+                bg-black text-white
+                hover:scale-[1.02]
+                transition
+                font-medium
+              "
+            >
+              Sign In
+            </button>
+
+          </form>
+
+        </div>
+
+        {/* FOOTNOTE */}
+        <p className="text-center text-xs text-gray-500 mt-6">
+          Secure access • Library system
+        </p>
+
+      </div>
     </div>
   );
 }

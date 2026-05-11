@@ -26,7 +26,7 @@ export default function BooksPage() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto p-5">
+    <div className="max-w-6xl mx-auto p-5 mt-20">
       <h1 className="text-3xl font-bold mb-6">All Books</h1>
 
       {/* 🔍 SEARCH INPUT */}
