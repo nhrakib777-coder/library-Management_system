@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 
 export default function RegisterPage() {
@@ -23,7 +22,7 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md bg-white p-6 rounded-xl shadow">
           <h1 className="text-2xl font-bold mb-4 text-center">Register</h1>

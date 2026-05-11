@@ -1,11 +1,15 @@
 'use client';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const { user, logout, loading } = useAuth();
+  const pathname = usePathname();
 
-  // Show a loading state while checking auth
+  // Hide navbar completely on admin routes
+  if (pathname.startsWith('/admin')) return null;
+
   if (loading) {
     return (
       <nav className="bg-white shadow p-4 sticky top-0 z-50">
@@ -31,13 +35,10 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              {/* 🔥 MY BOOKS REMOVED — ONLY PROFILE REMAINS */}
               <Link href="/profile" className="text-gray-700 hover:text-blue-600">Profile</Link>
-              
               {user.user_metadata?.role === 'admin' && (
                 <Link href="/admin" className="text-gray-700 hover:text-blue-600">Admin</Link>
               )}
-              
               <button onClick={logout} className="text-red-600 hover:text-red-700">Logout</button>
             </>
           )}

@@ -1,7 +1,7 @@
 import './globals.css';
 import { AuthProvider } from '@/context/AuthContext';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import ClientLayout from './ClientLayout';
+import { Toaster } from 'react-hot-toast';
 
 export const metadata = {
   title: 'Library Management System',
@@ -12,21 +12,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        
-        {/* 👉 AuthProvider MUST COME FIRST */}
         <AuthProvider>
-
-          {/* 👉 Then Navbar (now useAuth() works) */}
-          <Navbar />
-
-          <main className="flex-1">
-            {children}
-          </main>
-
-          <Footer />
-
+          <ClientLayout>{children}</ClientLayout>
+          <Toaster position="top-right" reverseOrder={false} />
         </AuthProvider>
-
       </body>
     </html>
   );
