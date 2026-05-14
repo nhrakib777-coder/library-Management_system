@@ -4,10 +4,8 @@ import { supabase } from '@/utils/supabase';
 import { useAuth } from '@/context/AuthContext';
 
 export default function AllBorrows() {
-  const [borrows, setBorrows] = useState([]);
   const { user } = useAuth();
 
-  // ONLY admin check
   if (!user || user.user_metadata?.role !== 'admin') {
     return <div className="p-10 text-center text-red-500">Access Denied</div>;
   }
@@ -20,7 +18,6 @@ export default function AllBorrows() {
   );
 }
 
-// ✅ SEPARATE COMPONENT = NO ESLINT WARNINGS
 function BorrowList() {
   const [borrows, setBorrows] = useState([]);
   const { user } = useAuth();
@@ -29,14 +26,18 @@ function BorrowList() {
     const load = async () => {
       const { data } = await supabase
         .from('borrows')
-        .select(`*, books(title, author), users:auth.users(email)`)
-        .order('borrowed_at', { ascending: false });
+        .select(`
+          *,
+          books(title, author),
+          users:auth.users(email)
+        `)
+        .order('created_at', { ascending: false }); // ✅ FIXED HERE
 
       setBorrows(data || []);
     };
 
     load();
-  }, [user]);
+  }, []);
 
   return (
     <div className="overflow-x-auto">
